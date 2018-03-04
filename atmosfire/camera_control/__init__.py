@@ -2,8 +2,7 @@ import numpy as np
 import math
 
 def setup(arduino):
-    arduino.set_pin_mode(0, 'I')
-    arduino.set_pin_mode(1, 'I')
+    pass
 
 
 def pan_vector(arduino):
@@ -21,3 +20,7 @@ def pan_vector(arduino):
         return 0, 0
     else:
         return r, int(math.degrees(np.arctan2(y,x)))
+
+def zoom_level(arduino):
+    pin = 2
+    return int(arduino.analog_read(pin))

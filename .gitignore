@@ -99,3 +99,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+atmosfire/pyduino/sketch/build-mega2560/
