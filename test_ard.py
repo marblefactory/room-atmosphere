@@ -3,20 +3,19 @@ from atmosfire import Arduino, camera_control
 
 
 if __name__ == '__main__':
-    
-    a = Arduino()    
+
+    a = Arduino()
     time.sleep(3)
 
     camera_control.setup(a)
 
-    for i in range(10):
+    for i in range(20):
 
-        x, y, s = camera_control.pan_vector(a)
-#        print("X:", x)
-#        print("Y:", y)
-        print("S:", s)
+        r, t = camera_control.pan_vector(a)
+        print("R:", r)
+        print("T:", t)
 
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 

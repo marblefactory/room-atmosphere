@@ -1,8 +1,10 @@
+import numpy as np
+import math
+
 def setup(arduino):
     arduino.set_pin_mode(0, 'I')
     arduino.set_pin_mode(1, 'I')
-    arduino.set_pin_mode(2, 'I')
-    arduino.digital_write(2 ,1)
+
 
 def pan_vector(arduino):
     x_offset = 523
@@ -10,13 +12,12 @@ def pan_vector(arduino):
 
     x_pin    = 0
     y_pin    = 1
-    s_pin    = 2
 
-    x = 1#int(arduino.analog_read(x_pin) - x_offset)
-    y = 1# int(arduino.analog_read(y_pin) - y_offset)
-    s = int(arduino.digital_read(s_pin))
+    x = int(arduino.analog_read(x_pin) - x_offset)
+    y = int(arduino.analog_read(y_pin) - y_offset)
 
-
-    return x, y, s
-        
-    
+    r = int(np.hypot(y,x))
+    if (r<10):
+        return 0, 0
+    else:
+        return r, int(math.degrees(np.arctan2(y,x)))

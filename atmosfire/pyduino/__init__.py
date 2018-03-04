@@ -12,7 +12,7 @@ class Arduino():
         """
         self.conn = serial.Serial(serial_port, baud_rate)
         self.conn.timeout = read_timeout # Timeout for readline()
-        
+
     def set_pin_mode(self, pin_number, mode):
         """
         Performs a pinMode() operation on pin_number
@@ -32,11 +32,14 @@ class Arduino():
         command = (''.join(('RD', str(pin_number)))).encode()
         self.conn.write(command)
         line_received = self.conn.readline().decode().strip()
-        header, value = line_received.split(':') # e.g. D13:1
+        lst = line_received.split(':') # e.g. D13:1
+        if (len(lst) < 2):
+            return self.digital_read(pin_number)
+        header, value = lst[0], lst[1]
         if header == ('D'+ str(pin_number)):
             # If header matches
             return int(value)
-        
+
     def digital_write(self, pin_number, digital_value):
         """
         Writes the digital_value on pin_number
@@ -46,22 +49,21 @@ class Arduino():
         command = (''.join(('WD', str(pin_number), ':',
             str(digital_value)))).encode()
         self.conn.write(command)
-        
+
     def analog_read(self, pin_number):
         """
         Performs an analog read on pin_number and returns the value (0 to 1023)
         Internally sends b'RA{pin_number}' over the serial connection
         """
         command = (''.join(('RA', str(pin_number)))).encode()
-        self.conn.write(command) 
+        self.conn.write(command)
         line_received = self.conn.readline().decode().strip()
-        #print(line_received.split(':'))
-        #return 1
-        args   = line_received.split(':')
-        #print(args)
-        #return 1
-        header = args[0] # e.g. A4:1
-        value  = args[1]
+        lst = line_received.split(':') # e.g. D13:1
+        if (len(lst) < 2):
+            return self.analog_read(pin_number)
+        header, value = lst[0], lst[1]
+        header = lst[0] # e.g. A4:1
+        value  = lst[1]
         if header == ('A'+ str(pin_number)):
             # If header matches
             return int(value)
@@ -74,15 +76,12 @@ class Arduino():
         """
         command = (''.join(('WA', str(pin_number), ':',
             str(analog_value)))).encode()
-        self.conn.write(command) 
+        self.conn.write(command)
 
     def close(self):
         """
         To ensure we are properly closing our connection to the
-        Arduino device. 
+        Arduino device.
         """
         self.conn.close()
         print ('Connection to Arduino closed')
-
-
-     
