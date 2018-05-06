@@ -23,8 +23,9 @@ def timer():
 @app.route('/timer/update', methods=['POST'])
 def timer_update():
     try:
-
-        new_time_seconds=request.get_json()['time']
+        j=request.get_json()
+        print(j)
+        new_time_seconds = j['time']
         socketio.emit('timer_update', new_time_seconds)
     except e:
         print(e)
