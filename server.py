@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO,  emit
 from flask_restful import Api, Resource
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
 
@@ -27,8 +27,8 @@ def timer_update():
 
 alarm_pin=21
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(alarm_pin, GPIO.OUT)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(alarm_pin, GPIO.OUT)
 
 alarm_is_on = False
 
@@ -49,7 +49,7 @@ class RaiseAlarmResource(Resource):
         else:
             last_request = this_request
 
-            # GPIO.output(alarm_pin, GPIO.LOW)
+            GPIO.output(alarm_pin, GPIO.LOW)
             alarm_is_on=True
         return 200
 
@@ -62,11 +62,11 @@ class LowerAlarmResource(Resource):
             pass
         else:
             last_request = this_request
-            # GPIO.output(alarm_pin, GPIO.HIGH)
+            GPIO.output(alarm_pin, GPIO.HIGH)
             alarm_is_on=False
         return 200
 
-# GPIO.output(alarm_pin, GPIO.HIGH)
+GPIO.output(alarm_pin, GPIO.HIGH)
 
 api.add_resource(RaiseAlarmResource, '/alarm/raise', endpoint='raise')
 api.add_resource(LowerAlarmResource, '/alarm/lower', endpoint='lower')
