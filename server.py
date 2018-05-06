@@ -24,6 +24,7 @@ def timer():
 def timer_update():
 
     j=request.get_json()
+    print(j)
     # print(j)
     new_time_seconds = j['time']
     socketio.emit('timer_update', new_time_seconds)
