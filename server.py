@@ -21,7 +21,7 @@ def timer():
 
 
 @app.route('/timer/update/<int:new_time_string>', methods=['POST'])
-def timer_update():
+def timer_update(new_time_string):
 
     # j=request.get_json()
     # print(j)
