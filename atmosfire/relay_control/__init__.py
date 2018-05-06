@@ -1,20 +1,16 @@
-from threading import Thread
-import time
-
-def setup(arduino):
-    arduino.set_pin_mode(2, 'O')
-    time.sleep(1)
-    arduino.digital_write(2, 1)
-
-def _async_alarm(length=5):
-    arduino.digital_write(2,0)
-    time.sleep(length)
-    arduino.digital_write(2,1)
+import RPi.GPIO as GPIO
 
 
 def raise_alarm():
     """
     Turns the alarm on.
     """
+    pass
 
-    
+
+
+def lower_alarm():
+    """
+    Turns the alarm off.
+    """
+    GPIO.output(box_alarm_pin, GPIO.LOW)
