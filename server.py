@@ -20,13 +20,14 @@ def timer():
     return render_template('timer.html')
 
 
-@app.route('/timer/update', methods=['POST'])
+@app.route('/timer/update/<int:new_time_string>', methods=['POST'])
 def timer_update():
 
-    j=request.get_json()
-    print(j)
+    # j=request.get_json()
     # print(j)
-    new_time_seconds = j['time']
+    # print(j)
+    # new_time_seconds = j['time']
+    new_time_seconds = int(new_time_string)
     socketio.emit('timer_update', new_time_seconds)
 
     return 'ok', 200
