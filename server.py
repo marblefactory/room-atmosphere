@@ -3,6 +3,8 @@ from flask_socketio import SocketIO,  emit
 from flask_restful import Api, Resource
 import RPi.GPIO as GPIO
 import time
+import threading
+
 
 
 
@@ -30,7 +32,7 @@ alarm_pin=21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(alarm_pin, GPIO.OUT)
 
-alarm_is_on = False
+alarm_time = 10
 
 
 current_time = lambda: int(round(time.time() *1000))
@@ -39,31 +41,31 @@ current_time = lambda: int(round(time.time() *1000))
 last_request = 0
 # and let me hold you..
 
+def alarm_on():
+    GPIO.output(alarm_pin, GPIO.LOW)
+    time.sleep(alarm_time)
+    GPIO.output(alarm_pin, GPIO.HIGH)
+
+
+
 class RaiseAlarmResource(Resource):
     def post(self):
-        global alarm_is_on
         global last_request
         this_request = current_time()
-        if alarm_is_on or (this_request-last_request < 5000):
+        if (this_request-last_request < alarm_time*100 + 10):
             pass
         else:
             last_request = this_request
-
-            GPIO.output(alarm_pin, GPIO.LOW)
-            alarm_is_on=True
+            threading.Thread(target=alarm_on).start()
         return 200
 
 class LowerAlarmResource(Resource):
     def post(self):
-        global alarm_is_on
         global last_request
         this_request = current_time()
-        if not alarm_is_on or (this_request-last_request < 5000):
-            pass
-        else:
-            last_request = this_request
-            GPIO.output(alarm_pin, GPIO.HIGH)
-            alarm_is_on=False
+
+        last_request = this_request
+        GPIO.output(alarm_pin, GPIO.HIGH)
         return 200
 
 GPIO.output(alarm_pin, GPIO.HIGH)
