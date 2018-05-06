@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Time is running out</title>
+<link href="https://fonts.googleapis.com/css?family=Unica+One" rel="stylesheet">
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+
+    <script type="text/javascript">
+    //<![CDATA[
+
+    function leading_zero(n) {
+      if (n < 10) {
+        return `0${n}`;
+      }
+      return n;
+    }
+
+    function sec_to_min(total_ms){
+      // var mins   = Math.floor(total_sec/60);
+      //
+      // var sec    = total_sec - (mins*60)
+      // var prefix = sec < 10? `0`:``
+      // return `${mins}:${prefix}${sec}`
+
+      var total_sec = Math.floor(total_ms/100);
+      var mins = Math.floor(total_sec/60);
+      var sec = total_sec - (mins*60);
+      var ms = total_ms - (mins * 60 * 100) - (sec * 100);
+
+      return `${mins}:${leading_zero(sec)}.${leading_zero(ms)}`;
+    }
+
+    function setupSocket() {
+        var p = document.location.href;
+        console.log(p);
+        var gSocket = io.connect(p);
+
+        var timer_h1 = document.querySelector('#timer');
+        var remaining_ms = 0;
+
+        function update() {
+          timer_h1.innerHTML = sec_to_min(remaining_ms);
+
+          if (remaining_ms <= 100*60) {
+            timer_h1.style.color = '#F00';
+          } else {
+            timer_h1.style.color = '#0F0';
+          }
+
+          if (remaining_ms <= 0) {
+            remaining_ms = 0;
+          } else {
+            remaining_ms--;
+          }
+        }
+
+        // Emit a connected message to let the server that we are connected.
+        gSocket.on('timer_update', function(new_time_seconds) {
+          console.log(`new_time: ${new_time_seconds}`)
+          remaining_ms = new_time_seconds * 100;
+        });
+
+        setInterval(update, 10);
+    }
+
+    window.addEventListener('load', setupSocket);
+
+
+
+
+    //]]>
+    </script>
+
+    <style>
+
+      body {
+        background-color: #000;
+      }
+
+      h1 {
+        color: #00FF00;
+        font-family: 'Unica One', cursive;
+        font-size: 2000%;
+        width: 100%;
+        text-align: center;
+      }
+
+
+    </style>
+
+
+  </head>
+
+  <body>
+
+    <h1 id="timer"></h1>
+
+  </body>
+</html>
