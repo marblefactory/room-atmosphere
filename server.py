@@ -1,17 +1,17 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO,  emit
 from flask_restful import Api, Resource
-import RPi.GPIO as GPIO
 import time
 import threading
-
+import requests
 
 
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+# socketio = SocketIO(app)
+socketio = SocketIO(app, engineio_logger=True, async_mode='eventlet')
 api      = Api(app)
 
 
@@ -22,61 +22,65 @@ def timer():
 
 @app.route('/timer/update/<int:new_time_string>', methods=['POST'])
 def timer_update(new_time_string):
-
-    # j=request.get_json()
-    # print(j)
-    # print(j)
-    # new_time_seconds = j['time']
     new_time_seconds = int(new_time_string)
     socketio.emit('timer_update', new_time_seconds)
-
     return 'ok', 200
 
 
-alarm_pin=21
+@app.route('/terminals/<int:num_terminals>', methods=['POST'])
+def num_terminals(num_terminals):
+    print("Num terminals:", num_terminals)
+    voice_addr = 'https://192.168.0.32/terminals/{}'.format(num_terminals)
+    requests.post(voice_addr, verify=False)
+    return 'ok', 200
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(alarm_pin, GPIO.OUT)
-
-alarm_time = 10
-
-
-current_time = lambda: int(round(time.time() *1000))
-
-# Grant my..
-last_request = 0
-# and let me hold you..
-
-def alarm_on():
-    GPIO.output(alarm_pin, GPIO.LOW)
-    time.sleep(alarm_time)
-    GPIO.output(alarm_pin, GPIO.HIGH)
-
-
-
-class RaiseAlarmResource(Resource):
-    def post(self):
-        global last_request
-        this_request = current_time()
-        if (this_request-last_request < alarm_time*100 + 10):
-            pass
-        else:
-            last_request = this_request
-            threading.Thread(target=alarm_on).start()
-        return 200
-
-class LowerAlarmResource(Resource):
-    def post(self):
-        global last_request
-        this_request = current_time()
-
-        last_request = this_request
-        GPIO.output(alarm_pin, GPIO.HIGH)
-        return 200
-
-GPIO.output(alarm_pin, GPIO.HIGH)
-
-api.add_resource(RaiseAlarmResource, '/alarm/raise', endpoint='raise')
-api.add_resource(LowerAlarmResource, '/alarm/lower', endpoint='lower')
+# alarm_pin=21
+#
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(alarm_pin, GPIO.OUT)
+#
+# alarm_time = 10
+#
+#
+# current_time = lambda: int(round(time.time() *1000))
+#
+# # Grant my..
+# last_request = 0
+# # and let me hold you..
+#
+# def alarm_on():
+#     GPIO.output(alarm_pin, GPIO.LOW)
+#     time.sleep(alarm_time)
+#     GPIO.output(alarm_pin, GPIO.HIGH)
+#
+#
+#
+# class RaiseAlarmResource(Resource):
+#     def post(self):
+#         global last_request
+#         this_request = current_time()
+#         if (this_request-last_request < alarm_time*100 + 10):
+#             pass
+#         else:
+#             last_request = this_request
+#             threading.Thread(target=alarm_on).start()
+#         return 200
+#
+# class LowerAlarmResource(Resource):
+#     def post(self):
+#         global last_request
+#         this_request = current_time()
+#
+#         last_request = this_request
+#         GPIO.output(alarm_pin, GPIO.HIGH)
+#         return 200
+#
+# GPIO.output(alarm_pin, GPIO.HIGH)
+#
+# api.add_resource(RaiseAlarmResource, '/alarm/raise', endpoint='raise')
+# api.add_resource(LowerAlarmResource, '/alarm/lower', endpoint='lower')
 
 # app.run(host='0.0.0.0')
+socketio.run(app, host='0.0.0.0', port=5000)
+
+print("Running")
