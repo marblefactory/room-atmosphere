@@ -35,7 +35,7 @@ def timer_update(new_time_string):
 @app.route('/terminals/<int:num_terminals>', methods=['POST'])
 def num_terminals(num_terminals):
     print("Num terminals:", num_terminals)
-    voice_addr = 'https://192.168.0.32/terminals/{}'.format(num_terminals)
+    voice_addr = 'https://192.168.1.2/terminals/{}'.format(num_terminals)
     requests.post(voice_addr, verify=False)
     return 'ok', 200
 
