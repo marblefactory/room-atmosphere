@@ -22,6 +22,7 @@ def timer():
 
 @app.route('/timer/update/<int:new_time_string>', methods=['POST'])
 def timer_update(new_time_string):
+    print("New time:", new_time_string)
     new_time_seconds = int(new_time_string)
     socketio.emit('timer_update', new_time_seconds)
     return 'ok', 200
