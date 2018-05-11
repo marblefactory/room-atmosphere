@@ -2,46 +2,13 @@
 ## Games day room atmosphere.
 ---
 
-# At the enterance
-- Get handed ID badges
-- Laser tripwire
-    - Only a bit of fun
+## Alarm System
+The pysical comand centre has a 12V flashing red light mounted on it. This repo runs a server that allows the alarm to be raised and lowered with HTTP Post requests. The server uses the Raspberry Pis general purpouse input/output interface to drive a simple 12V relay. The relay is wired that drawing the pin low will power the light, and high will turn it off.
 
-# While you are waiting
-- Get handed a mission brief
-    - Brown paper folder
-        - Top Secret
-    - Photos
-        - Aerial photos with red areas marked
-        - Photos of suspicious people
-        - Weapon design blueprints
-    - Written brief
-    - Instruction for the mini-games
+The purpouse of this is so that the game can hit the Pi server when the guards are allerted and cause the in-room alarm to go off, added to the immersion that the game is real.
 
-# At the command center
-- Custom made table
-    - Mounts for 4 tablets
-        - Center game map (Large)
-        - Mini-Games (Medium)
-        - Camera selection (Small)
-        - Speech connection information (Small)
-    - Status light section for use with the minigames
-    - Plugboard for show
-    - Toggles and switches that control other parameters
-    - Built in microphone?
-    - Push to talk button
-    - Alarm light mounted
-    - Internal power
-- Monitor
-    - Displaying the currently selected camera?
-- Looking at the TV wall
-    - One showing mission information
-    - Countdown timer
-    - Missile in flight
+## Timer
+The Pi server also hosts an endpoint that displays a countdown time for the game on a webpage. The server uses socket.io to emit updates the time displayed when an endpoint is called. Javascript is used to countdown the timer from the starting value. For example when the game starts the total game time is displayed, and if for example the game finishes early (spy caught, etc) then the timer can be updated accordingly.
 
-# In the room
-- Suspence building music
-- Black out the windows
-- Put up suspects wall of Photos
-- Use a map with string tieing places together
-- Large printout of the building blueprints
+## Game speaking to user
+Unfortunately the version of UWS that the game uses doesnot support https communications, which means that it could not directly interface with Google cloud platofrm. As a workaround the RPi has an endpoint that simply bounces to Google at the same URI and content. This functionality allows the game to initaiate speaking to the user rather than the voice server needing to poll the game to ask if it wanted to say anything.
